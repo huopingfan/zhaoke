@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fh.dao.dept.IDeptDao" >
+	
+
+<resultMap type="com.fh.bean.dept.DeptBean" id="BaseDeptMap">
+		<id column="cdeptid" property="cdeptid" jdbcType="VARCHAR" />
+		<result column="cdeptname" property="cdeptname" jdbcType="VARCHAR" />
+		<result column="cpid" property="cpid" jdbcType="VARCHAR" />
+		<result column="nvalid" property="nvalid" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<select id="queryDeptZtree" parameterType="com.fh.bean.dept.DeptBean" resultMap="BaseDeptMap">
+	
+		select cdeptid,cpid,cdeptname from t_fh_dept 
+		
+	</select>
+	
+	<insert id="addDept">
+		insert INTO t_fh_dept (cdeptid,cpid,cdeptname,nvalid) 
+		
+		values
+		<foreach collection="list"  item="dept"  index="index" separator=",">
+		
+		(REPLACE(UUID(),'-',''),#{dept.cpid,jdbcType=VARCHAR},#{dept.cdeptname,jdbcType=VARCHAR},#{dept.nvalid,jdbcType=INTEGER}) 
+		</foreach>
+		
+		
+	</insert>
+	<delete id="deleteDept">
+
+			delete from t_fh_dept where  cdeptid   in 
+			
+			<foreach collection="array"  item="id"  index="index"  open="(" close=")" separator=",">
+					#{id,jdbcType=VARCHAR}
+			</foreach>
+
+	</delete>
+	
+	<update id="updateDept" parameterType="com.fh.bean.dept.DeptBean">
+	
+		update 	t_fh_dept set cdeptname = #{cdeptname} where cdeptid = #{cdeptid}
+	
+	</update>
+	
+	
+	
+	<select id="querydept" resultMap="BaseDeptMap">
+		select cdeptid,cdeptname from t_fh_dept
+	
+	</select>
+	
+	
+	
+	
+	
+	<!-- <select id="querycount" parameterType="com.fh.bean.GameBean" resultType="java.lang.Long">
+		select count(gid) from t_game where 1=1
+		
+		<if test="gname != null and gname !=''">
+				and gname like CONCAT('%',#{gname},'%')         	
+            </if>
+          
+            <if  test="mintime != null and mintime !=''">
+             	and gtime &gt;= #{mintime} 
+            </if>
+            <if test="maxtime != null and maxtime !=''">
+				and  gtime &lt;= #{maxtime}        	
+            </if>
+			<if test="nstatus !=  null and nstatus != ''">
+				and nstatus = #{nstatus}
+			</if>
+		
+		
+		
+	</select>
+	
+	<select id="queryGamePageList" parameterType="java.util.Map" resultMap="BaseGameMap">
+	
+	select  gid,gname,nstatus,gtime,gimgurl,gbalance from  t_game  where  1=1 
+		
+		 <if test="game.gname != null and game.gname !=''">
+				and gname like CONCAT('%',#{game.gname},'%')         	
+            </if>
+          
+            <if  test="game.mintime != null and game.mintime !=''">
+             	and gtime &gt;= #{game.mintime} 
+            </if>
+            <if test="game.maxtime != null and game.maxtime !=''">
+				and  gtime &lt;= #{game.maxtime}        	
+            </if>
+			<if test="game.nstatus !=  null and game.nstatus != ''">
+				and nstatus = #{game.nstatus}
+			</if>
+			
+	
+	
+	  
+	    limit   #{page.startindex},#{page.pagesize}
+	
+	</select>
+	
+	<insert id="addGame" parameterType="com.fh.bean.GameBean">
+		<selectKey   keyProperty = "gid" resultType = "String" order="BEFORE">
+			select replace(uuid(),'-','')  from dual
+		</selectKey>
+	
+		insert INTO t_game (gid,gname,nstatus,gtime,gimgurl,gbalance) 
+		
+		values(#{gid,jdbcType=VARCHAR},#{gname,jdbcType=VARCHAR},#{nstatus,jdbcType=INTEGER},
+		
+		#{gtime,jdbcType=DATE},#{gimgurl,jdbcType=VARCHAR},#{gbalance,jdbcType=DOUBLE}); 
+		
+	</insert>
+	
+	
+	<delete id="delGame" parameterType="String">
+
+			delete from t_game where  gid = #{gid} 
+			
+
+	</delete>
+	
+	
+	<select id="queryGameById" parameterType="String" resultMap="BaseGameMap">
+	
+	select   gid,gname,nstatus,gtime,gimgurl,gbalance
+		
+	from  t_game
+	
+	  where gid = #{gid,jdbcType=VARCHAR} 
+	  
+	</select>
+	
+	
+	<update id="updateGame" parameterType="com.fh.bean.GameBean">
+	
+		update 	t_game set gname=#{gname,jdbcType=VARCHAR},nstatus=#{nstatus,jdbcType=INTEGER},
+		gtime=#{gtime,jdbcType=DATE},gbalance=#{gbalance,jdbcType=DOUBLE}
+		where gid = #{gid,jdbcType=VARCHAR}
+	
+	</update>  -->
+	
+	
+	
+	
+	<!-- <select id="querycount" parameterType="com.fh.bean.emp.EmpBean" resultType="java.lang.Long">
+		select count(e.cempid) from t_emp e left join t_dept p on e.cdeptid = p.cid 
+		where 1=1 
+		 <if test="cdeptids  != null and  cdeptids != ''">
+		 	and e.cdeptid in    
+		 	<foreach collection="deptidlist" item="deptidlist" open="(" close=")" index="index" separator=",">
+			#{deptidlist}   
+			</foreach>
+		 </if>
+		   条件查询
+           <if test="cempname != null and cempname !=''">
+				and cempname like CONCAT('%',#{cempname},'%')         	
+            </if>
+           <if  test="minsalary != null and minsalary !=''">
+             	and csalary &gt;= #{minsalary} 
+            </if>
+            <if test="maxsalary != null and maxsalary !=''">
+				and  csalary &lt;= #{maxsalary}        	
+            </if>
+            <if  test="minbirthday != null and minbirthday !=''">
+             	and cbirthday &gt;= #{minbirthday} 
+            </if>
+            <if test="maxbirthday != null and maxbirthday !=''">
+				and  cbirthday &lt;= #{maxbirthday}        	
+            </if>
+		 
+		 
+		 
+		 
+		 
+	</select>
+	
+	<select id="ExportDeptExcel" parameterType="com.fh.bean.emp.EmpBean" resultMap="BaseEmpMap">
+	
+	select e.cempname,e.csex,e.cbirthday,e.csalary,p.cdeptname 
+	
+	from  t_emp e left join t_dept p on e.cdeptid = p.cid where cdeptid  in
+	
+	
+		
+			<foreach collection="array"  item="cdeptids"  index="index"  open="(" close=")" separator=",">
+					#{id,jdbcType=VARCHAR}
+			</foreach>
+			 条件查询
+           <if test="cempname != null and cempname !=''">
+				and cempname like CONCAT('%',#{cempname},'%')         	
+            </if>
+           <if  test="minsalary != null and minsalary !=''">
+             	and csalary &gt;= #{minsalary} 
+            </if>
+            <if test="maxsalary != null and maxsalary !=''">
+				and  csalary &lt;= #{maxsalary}        	
+            </if>
+            <if  test="minbirthday != null and minbirthday !=''">
+             	and cbirthday &gt;= #{minbirthday} 
+            </if>
+            <if test="maxbirthday != null and maxbirthday !=''">
+				and  cbirthday &lt;= #{maxbirthday}        	
+            </if>
+	</select> 
+	
+	<select id="queryAllEmp"  resultMap="BaseEmpMap">
+	
+		select e.cempname,e.csex,e.cbirthday,e.csalary,p.cdeptname
+		
+	from  t_emp e left join t_dept p on e.cdeptid = p.cid 
+	
+	</select>
+	
+	<select id="getEmpName"  resultMap="BaseEmpMap">
+	
+		select cempname from  t_emp
+	
+	</select> -->
+	
+	
+	<!-- <select id="queryEmpPageList" parameterType="java.util.Map" resultMap="BaseEmpMap">
+	
+	select  e.cempid,e.cempname,e.csex,e.cbirthday,e.csalary,e.empphotoimg,p.cdeptname
+		
+	from  t_emp e left join t_dept p on e.cdeptid = p.cid
+	
+	  where  1=1 
+	  
+	   <if test="emp.deptidlist  != null and emp.deptidlist.size!=0">
+		 	and e.cdeptid in    
+		 	<foreach collection="emp.deptidlist" item="deptidlist" open="(" close=")" index="index" separator=",">
+			
+			#{deptidlist}   
+			
+				</foreach>
+		 	
+		 </if>
+          
+            条件查询
+           <if test="emp.cempname != null and emp.cempname !=''">
+				and cempname like CONCAT('%',#{emp.cempname},'%')         	
+            </if>
+           <if  test="emp.minsalary != null and emp.minsalary !=''">
+             	and csalary &gt;= #{emp.minsalary} 
+            </if>
+            <if test="emp.maxsalary != null and emp.maxsalary !=''">
+				and  csalary &lt;= #{emp.maxsalary}        	
+            </if>
+            <if  test="emp.minbirthday != null and emp.minbirthday !=''">
+             	and cbirthday &gt;= #{emp.minbirthday} 
+            </if>
+            <if test="emp.maxbirthday != null and emp.maxbirthday !=''">
+				and  cbirthday &lt;= #{emp.maxbirthday}        	
+            </if>
+	  
+	    limit   #{page.startindex},#{page.pagesize}
+	
+	</select> -->
+	
+	<!-- <delete id="deleteEmp" parameterType="String">
+
+			delete from t_emp where  cempid = #{cempid} 
+			
+
+	</delete> -->
+	
+	<!--  <insert id="addEmp" parameterType="com.fh.bean.emp.EmpBean">
+		<selectKey   keyProperty = "cempid" resultType = "String" order="BEFORE">
+			select replace(uuid(),'-','')  from dual
+		</selectKey>
+	
+		insert INTO t_emp (cempid,cempname,csex,cbirthday,csalary,cdeptid,empphotoimg) 
+		
+		values(#{cempid,jdbcType=VARCHAR},#{cempname,jdbcType=VARCHAR},#{csex,jdbcType=INTEGER},
+		
+		#{cbirthday,jdbcType=DATE},#{csalary,jdbcType=DECIMAL},#{cdeptid,jdbcType=VARCHAR},#{empphotoimg,jdbcType=VARCHAR}); 
+		
+	</insert> -->
+	
+	
+	
+	
+	
+<!-- 	<update id="queryEmpById" parameterType="com.fh.bean.product.ProductBean">
+			update  t_product set cname=#{cname},ctypeid=#{ctypeid},fprice=#{fprice},ddate=#{ddate},cimg=#{cimg}
+			where cid=#{cid}
+		</update> -->
+	
+	
+	<!-- <select id="queryEmpById" parameterType="String" resultMap="BaseEmpMap">
+	
+	select  e.cempid,e.cempname,e.csex,e.cbirthday,e.csalary,e.empphotoimg,p.cdeptname
+		
+	from  t_emp e left join t_dept p on e.cdeptid = p.cid
+	
+	  where cempid = #{cempid,jdbcType=VARCHAR} 
+	  
+	</select> -->
+	
+	<!-- <update id="updateEmp" parameterType="com.fh.bean.emp.EmpBean">
+	
+		update 	t_emp set cempname=#{cempname,jdbcType=VARCHAR},csex=#{csex,jdbcType=INTEGER},
+		cbirthday=#{cbirthday,jdbcType=DATE},csalary=#{csalary,jdbcType=DECIMAL},
+		cdeptid=#{cdeptid,jdbcType=VARCHAR}
+		where cempid = #{cempid,jdbcType=VARCHAR}
+	
+	</update> -->
+	
+	
+	<!-- <insert id="addDept" parameterType="com.fh.bean.dept.DeptBean">
+		<selectKey   keyProperty = "cid" resultType = "String" order="BEFORE">
+			select replace(uuid(),'-','')  from dual
+		</selectKey>
+	
+		insert INTO t_dept (cid,cpid,cdeptname,cdescription) 
+		
+		values(#{cid,jdbcType=VARCHAR},#{cpid,jdbcType=VARCHAR},#{cdeptname,jdbcType=VARCHAR},#{cdescription,jdbcType=LONGVARCHAR}); 
+		
+	</insert>
+	
+	<delete id="deleteDept">
+
+			delete from t_dept where  cid   in 
+			
+			<foreach collection="array"  item="id"  index="index"  open="(" close=")" separator=",">
+					#{id,jdbcType=VARCHAR}
+			</foreach>
+
+	</delete>
+	
+	<update id="updateDept" parameterType="com.fh.bean.dept.DeptBean">
+	
+		update 	t_dept set cdeptname = #{cdeptname},cdescription = #{cdescription} where cid = #{cid}
+	
+	</update> -->
+	
+	
+	
+	
+	<!-- 	
+		 查询总条数
+		<select id="queryCount"  parameterType="com.fh.bean.product.ProductBean"  resultType="java.lang.Long">
+				SELECT count(cid) from t_product 
+					where 1=1  
+					<if test="likename != null  and likename != ''"  >
+					模糊查询 
+						and  c_name like CONCAT('%',CONCAT(#{likename},'%'))
+					</if>
+					<if test="liketypename != null and liketypename !='' ">
+							and c_typeid = #{liketypename}
+					</if>
+					<if test="likestartdate != null">
+						and d_date &gt;= #{likestartdate}
+					</if>
+					<if test="likeenddate != null">
+						and d_date &lt;= #{likeenddate}
+					</if>
+		</select>
+	
+		查询分页数据
+		<select id="queryPageList" parameterType="java.util.Map"  resultMap="BaseProductMap" >
+			SELECT p.cid,p.cname,p.ctypeid,p.fprice,p.ddate,p.cimg,t.ctypename from t_product p
+			LEFT JOIN t_type t on p.ctypeid=t.ctid
+			where 1=1
+					<if test="pb.likename != null  and pb.likename != ''"  >
+					模糊查询 
+						and  c_name like CONCAT('%',CONCAT(#{pb.likename},'%'))
+					</if>
+					<if test="pb.liketypename != null and liketypename !='' ">
+							and c_typeid = #{pb.liketypename}
+					</if>
+					<if test="pb.likestartdate != null">
+						and d_date &gt;= #{pb.likestartdate}
+					</if>
+					<if test="pb.likeenddate != null">
+						and d_date &lt;= #{pb.likeenddate}
+					</if>
+					limit #{page.startindex} , #{page.pagesize}
+		</select>
+		查询类型列表
+		<select id="queryTypeList"  resultMap="BaseProductMap">
+			SELECT ty.ctypename,ty.ctid from t_type ty
+		</select>
+		
+		回显
+		<select id="selectById"  parameterType="com.fh.bean.product.ProductBean" resultMap="BaseProductMap">
+			SELECT p.cid,p.cname,p.ctypeid,p.fprice,p.ddate,p.cimg from t_product p where p.cid=#{cid};
+		</select>
+		添加
+		<insert id="addProduct" parameterType="com.fh.bean.product.ProductBean">
+		insert INTO t_product (cid,cname,ctypeid,fprice,ddate,cimg) 
+		VALUES(REPLACE(UUID(),'-',''),#{cname},#{ctypeid},#{fprice},#{ddate},#{cimg});
+		</insert>
+		
+		<update id="updateProduct" parameterType="com.fh.bean.product.ProductBean">
+			update  t_product set cname=#{cname},ctypeid=#{ctypeid},fprice=#{fprice},ddate=#{ddate},cimg=#{cimg}
+			where cid=#{cid}
+		</update>
+		
+		<delete id="deleteProduct" parameterType="com.fh.bean.product.ProductBean">
+		
+		delete from t_product  where cid = #{cid}
+		
+		</delete> -->
+		
+</mapper>
